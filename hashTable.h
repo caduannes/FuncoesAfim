@@ -44,6 +44,6 @@ hTiterator hT_iterator(hashTable* tabela);
 // Move iterator to next item in hash table, update iterator's key
 // and value to current item, and return true. If there are no more
 // items, return false. Don't call ht_set during iteration.
-bool hT_proximo(hTi* iterator);
+bool hT_proximo(hTiterator* iterator);
 
 #endif // _HT_H

@@ -15,7 +15,7 @@ typedef struct {
 
 // Hash table structure: create with ht_create, free with ht_destroy.
 struct hashTable {
-    ht_entrada* entradas;  // hash slots
+    hT_entrada* entradas;  // hash slots
     size_t capacidade;    // size of _entries array
     size_t tamanho;      // number of items in hash table
 };
