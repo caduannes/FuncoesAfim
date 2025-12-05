@@ -1,6 +1,6 @@
 // Simple hash table implemented in C.
 
-#include <HashTable.h>
+#include "HashTable.h"
 
 #include <assert.h>
 #include <stdint.h>
@@ -9,7 +9,7 @@
 
 // Hash table entry (slot may be filled or empty).
 typedef struct {
-    const char* nome;  // key is NULL if this slot is empty
+    const char* chave;  // key is NULL if this slot is empty
     void* ID;
 } hT_entrada;
 
@@ -43,7 +43,7 @@ hashTable* hT_criar(void) {
 void hT_destruir(hashTable* tabela) {
     // First free allocated keys.
     for (size_t i = 0; i < tabela->capacidade; i++) {
-        free((void*)tabela->entradas[i].nome);
+        free((void*)tabela->entradas[i].chave);
     }
 
     // Then free entries array and table itself.
@@ -55,24 +55,24 @@ void hT_destruir(hashTable* tabela) {
 #define FNV_PRIME 1099511628211UL
 
 // Return 64-bit FNV-1a hash for key (NUL-terminated). See description:
-// https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function
-static uint64_t hash_nome(const char* nome) {
+// https://en.wikipedia.org/wiki/Fowler–Noll–Vo_hash_function   
+static uint64_t hash_chave(const char* chave) {
     uint64_t hash = FNV_OFFSET;
-    for (const char* p = nome; *p; p++) {
+    for (const char* p = chave; *p; p++) {
         hash ^= (uint64_t)(unsigned char)(*p);
         hash *= FNV_PRIME;
     }
     return hash;
 }
 
-void* hT_get(hashTable* tabela, const char* nome) {
+void* hT_get(hashTable* tabela, const char* chave) {
     // AND hash with capacity-1 to ensure it's within entries array.
-    uint64_t hash = hash_chave(nome);
+    uint64_t hash = hash_chave(chave);
     size_t index = (size_t)(hash & (uint64_t)(tabela->capacidade - 1));
 
     // Loop till we find an empty entry.
-    while (tabela->entradas[index].nome != NULL) {
-        if (strcmp(nome, tabela->entradas[index].nome) == 0) {
+    while (tabela->entradas[index].chave != NULL) {
+        if (strcmp(chave, tabela->entradas[index].chave) == 0) {
             // Found key, return value.
             return tabela->entradas[index].ID;
         }
@@ -88,17 +88,17 @@ void* hT_get(hashTable* tabela, const char* nome) {
 
 // Internal function to set an entry (without expanding table).
 static const char* hT_set_entrada(hT_entrada* entradas, size_t capacidade,
-        const char* nome, void* ID, size_t* ptamanho) {
+        const char* chave, void* ID, size_t* ptamanho) {
     // AND hash with capacity-1 to ensure it's within entries array.
-    uint64_t hash = hash_chave(nome);
+    uint64_t hash = hash_chave(chave);
     size_t index = (size_t)(hash & (uint64_t)(capacidade - 1));
 
     // Loop till we find an empty entry.
-    while (entradas[index].nome != NULL) {
-        if (strcmp(nome, entradas[index].nome) == 0) {
+    while (entradas[index].chave != NULL) {
+        if (strcmp(chave, entradas[index].chave) == 0) {
             // Found key (it already exists), update value.
             entradas[index].ID = ID;
-            return entradas[index].nome;
+            return entradas[index].chave;
         }
         // Key wasn't in this slot, move to next (linear probing).
         index++;
@@ -110,15 +110,15 @@ static const char* hT_set_entrada(hT_entrada* entradas, size_t capacidade,
 
     // Didn't find key, allocate+copy if needed, then insert it.
     if (ptamanho != NULL) {
-        nome = strdup(nome);
-        if (nome == NULL) {
+        chave = strdup(chave);
+        if (chave == NULL) {
             return NULL;
         }
         (*ptamanho)++;
     }
-    entradas[index].nome = (char*)nome;
+    entradas[index].chave = (char*)chave;
     entradas[index].ID = ID;
-    return nome;
+    return chave;
 }
 
 // Expand hash table to twice its current size. Return true on success,
@@ -137,8 +137,8 @@ static bool hT_expandir(hashTable* tabela) {
     // Iterate entries, move all non-empty ones to new table's entries.
     for (size_t i = 0; i < tabela->capacidade; i++) {
         hT_entrada entrada = tabela->entradas[i];
-        if (entrada.nome != NULL) {
-            hT_set_entrada(novas_entradas, nova_capacidade, entrada.nome,
+        if (entrada.chave != NULL) {
+            hT_set_entrada(novas_entradas, nova_capacidade, entrada.chave,
                          entrada.ID, NULL);
         }
     }
@@ -150,7 +150,7 @@ static bool hT_expandir(hashTable* tabela) {
     return true;
 }
 
-const char* hT_set(hashTable* tabela, const char* nome, void* ID) {
+const char* hT_set(hashTable* tabela, const char* chave, void* ID) {
     assert(ID != NULL);
     if (ID == NULL) {
         return NULL;
@@ -164,7 +164,7 @@ const char* hT_set(hashTable* tabela, const char* nome, void* ID) {
     }
 
     // Set entry and update length.
-    return hT_set_entrada(tabela->entradas, tabela->capacidade, nome, ID,
+    return hT_set_entrada(tabela->entradas, tabela->capacidade, chave, ID,
                         &tabela->tamanho);
 }
 
@@ -185,10 +185,10 @@ bool hT_proximo(hTiterator* iterator) {
     while (iterator->_index < tabela->capacidade) {
         size_t i = iterator->_index;
         iterator->_index++;
-        if (tabela->entradas[i].nome != NULL) {
+        if (tabela->entradas[i].chave != NULL) {
             // Found next non-empty item, update iterator key and value.
             hT_entrada entrada = tabela->entradas[i];
-            iterator->nome = entrada.nome;
+            iterator->nome = entrada.chave;
             iterator->ID = entrada.ID;
             return true;
         }
