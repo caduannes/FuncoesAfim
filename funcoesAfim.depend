@@ -1,0 +1,31 @@
+# depslib dependency file v1.0
+1764854088 source:c:\users\labcel2\documents\programas_carlos\funcoesafim\hashtable.c
+	"HashTable.h"
+	<assert.h>
+	<stdint.h>
+	<stdlib.h>
+	<string.h>
+
+1764782463 c:\users\labcel2\documents\programas_carlos\funcoesafim\hashtable.h
+	<stdbool.h>
+	<stddef.h>
+
+1765475593 source:c:\users\labcel2\documents\programas_carlos\funcoesafim\testes.c
+	"Cliente.h"
+	<stdio.h>
+	<stddef.h>
+	<stdlib.h>
+	<string.h>
+
+1765475640 source:c:\users\labcel2\documents\programas_carlos\funcoesafim\tabela.c
+	"Cliente.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+
+1765476015 c:\users\labcel2\documents\programas_carlos\funcoesafim\cliente.h
+	"Cliente.h"
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+

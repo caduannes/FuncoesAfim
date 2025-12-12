@@ -1,4 +1,4 @@
-#include "hashTable.h"
+#include "Cliente.h"
 
 #include <stdio.h>
 #include <stddef.h>
@@ -11,17 +11,17 @@ typedef struct{
 } cliente;
 
 cliente* ordenar_ClientesID(cliente* clientes, size_t num_Clientes){
-    
+
     cliente* ordenado = malloc(num_Clientes * sizeof(cliente));
     if (!ordenado) {
         printf("Erro ao alocar memória!\n");
         exit(1);
     }
-    
+
     for (size_t i = 0; i < num_Clientes; i++) {
         ordenado[i] = clientes[i];
     }
-    
+
     for(size_t i=0; i<num_Clientes - 1; i++){
         for(size_t j=0; j<num_Clientes - i - 1; j++){
             if(ordenado[j].ID > ordenado[j+1].ID){
@@ -57,50 +57,54 @@ cliente* ordenar_ClientesNome(cliente* clientes, size_t num_Clientes) {
 }
 
 char* quemVCquerEncontrar(cliente* clientes, size_t num_Clientes, char destino[]){
-    
-        printf("Quem você quer encontrar?\n");
+
+        printf("Quem voce quer encontrar?\n");
         for(int i=0; i<num_Clientes; i++){
             printf("%s\n", clientes[i].nome);
         }
-        scanf("%19s", destino); 
+        scanf("%19s", destino);
     return destino;
 }
 
 cliente* busca_Linear(cliente* clientes, size_t num_Clientes){
-    
+
+    cliente* ordenadosNome = ordenar_ClientesNome(clientes, num_Clientes);
+
     char procurado[20];
-    quemVCquerEncontrar(clientes, num_Clientes, procurado);
+    quemVCquerEncontrar(ordenadosNome, num_Clientes, procurado);
 
     for(size_t i=0;i < num_Clientes; i++){
         if(strcmp(clientes[i].nome, procurado) == 0){
             cliente* achado = &clientes[i];
-            printf("A busca linear achou '%s' e o seu ID é:%d\n", achado->nome, achado->ID);
+            printf("'%s', ID:%d\n", achado->nome, achado->ID);
         return achado;
         }
     }
-    printf("Cliente não encontrado\n");
+    printf("Cliente nao encontrado\n");
     return NULL;
 }
 
-cliente* busca_Binaria(cliente* ordenadosNome, size_t num_Clientes){
-    
+cliente* busca_Binaria(cliente* clientes, size_t num_Clientes){
+
+    cliente* ordenadosNome = ordenar_ClientesNome(clientes, num_Clientes);
+
     if(num_Clientes + num_Clientes < num_Clientes){
         return NULL;
     }
-    
+
     char procurado[20];
     quemVCquerEncontrar(ordenadosNome, num_Clientes, procurado);
-    
+
     size_t menor = 0;
     size_t maior = num_Clientes - 1;
-    
+
     while(menor <= maior){
         size_t mediano = (menor + maior) / 2;
         int c = strcmp(ordenadosNome[mediano].nome, procurado);
-        
+
         if(c == 0){
             cliente* achado = &ordenadosNome[mediano];
-            printf("Encontrado: %s com ID %d\n", achado->nome, achado->ID);
+            printf("'%s', ID:%d\n", achado->nome, achado->ID);
             return achado;
         }
         else if(c < 0){
@@ -110,51 +114,62 @@ cliente* busca_Binaria(cliente* ordenadosNome, size_t num_Clientes){
             maior = mediano - 1;
         }
     }
-        printf("Cliente não encontrado!\n");
+        printf("Cliente nao encontrado!\n");
         free(ordenadosNome);
     return NULL;
 }
 
 int main(){
-    
-    int opcao;
-    cliente clientes[] = {
-        {"Carlos", 10}, {"Marcondes", 50}, {"Fernando", 67}, {"Caio", 32},
-        {"Gabriela", 20}, {"Pedro", 05}, {"Thiele", 16}};
-        
-        size_t num_Clientes = sizeof(clientes) / sizeof(cliente);
-        
-        printf("=====MENU=====\n");
-        printf("Imprimir clientes ordenados = 0\n");
-        printf("Buscar linearmente = 1\n");
-        printf("Buscar binariamente = 2\n");
-        printf("Buscar por Hash = 3\n");
-        scanf("%d", &opcao);
-        
-        switch(opcao){
-            case 0:
-                cliente* ordenadosID = ordenar_ClientesID(clientes, num_Clientes);
-                if (ordenadosID) {
-                    printf("Clientes ordenados por ID:\n");
-                for (size_t i = 0; i < num_Clientes; i++) {
-                    printf("%d - %s\n", ordenadosID[i].ID, ordenadosID[i].nome);
-                }
-                    free(ordenadosID);
-                }
-                break;
-            case 1:
-                busca_Linear(clientes, num_Clientes);
-                break;
-            case 2:
-                cliente* ordenadosNome = ordenar_ClientesNome(clientes, num_Clientes);
-                busca_Binaria(ordenadosNome, num_Clientes);
-                break;
-            case 3:
+
+
+
+        //do{
+        //printf("=====MENU=====\n");
+        //printf("1 = Imprimir clientes ordenados\n");
+        //printf("2 = Buscar linearmente\n");
+        //printf("3 = Buscar binariamente\n");
+        //printf("4 = Buscar por Hash\n");
+        //printf("0 = Sair\n");
+        //scanf("%d", &opcao);
+
+        //switch(opcao){
+            //case 1:
+                //do{
+                //printf("====MENU====\n");
+                //printf("1 - Ordenados por ID\n");
+                //printf("2 - Ordenados por nome\n");
+                //printf("0 - Voltar\n");
+                //scanf("%d", &opcaoOrdenacao);
+
+                    //switch(opcaoOrdenacao){
+                    //case 1:
+                        //imprimirClientesOrdenadosID(clientes,num_Clientes);
+                    //break;
+                    //case 2:
+                        //imprimirClientesOrdenadosNome(clientes,num_Clientes);
+                    //break;
+                    //case 0:
+                        //printf("Saindo. . .\n");
+                    //break;
+                    //}
+                //}while(opcaoOrdenacao != 0);
+            //break;
+            //case 2:
+                //busca_Linear(clientes, num_Clientes);
+                //break;
+            //case 3:
+                //busca_Binaria(clientes, num_Clientes);
+                //break;
+            //case 4:
                 //busca_Hash();
-                break;
-            default:
-                printf("Opção invalida\n");
-            break;
-        }
+                //break;
+            //case 0:
+                //printf("Saindo . . . \n");
+                //break;
+            //default:
+                //printf("Opção invalida\n");
+            //break;
+        //}
+        //}while(opcao != 0);
     return 0;
 }
